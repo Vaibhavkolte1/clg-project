@@ -13,6 +13,7 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        alert("currently not in service");
 
         try {
             if (!name || !email || !password || !address) {
@@ -20,7 +21,7 @@ const Register = () => {
                 return;
             }
 
-            api.post("/auth/register", {
+            api.post("/auth/register-xxx", {
                 name,
                 email,
                 password,
