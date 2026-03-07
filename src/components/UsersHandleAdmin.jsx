@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import api from '../api/axios'
 import Toast from './Toast'
+import { FaUserShield, FaBan, FaCheckCircle } from "react-icons/fa";
 
 const UsersHandleAdmin = ({ id, name, role, active }) => {
     const [isBlocked, setisBlocked] = useState(false)
@@ -34,63 +35,79 @@ const UsersHandleAdmin = ({ id, name, role, active }) => {
     }
 
     return (
-        <div className="w-full max-w-2xl mx-auto
-                        bg-white border border-gray-200
-                        rounded-xl p-4
-                        shadow-sm hover:shadow-md
-                        transition-all duration-200">
+        <div className="group w-full max-w-3xl mx-auto bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-300">
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
 
-                {/* Left Section */}
-                <div className="flex flex-col overflow-hidden">
-                    <p className="text-xs text-gray-400">
-                        User ID
-                    </p>
-                    <p className="font-semibold text-gray-800 truncate">
-                        {id}
-                    </p>
+                {/* Left Section: Avatar & Identity */}
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 font-black text-lg shadow-inner 
+                    ${role === "ADMIN" ? "bg-red-50 text-red-600" : "bg-slate-50 text-slate-400"}`}>
+                        {name.charAt(0).toUpperCase()}
+                    </div>
 
-                    <p className="text-sm text-gray-500 mt-1 truncate">
-                        {name}
-                    </p>
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-base font-black text-slate-800 truncate leading-tight">
+                                {name}
+                            </h2>
+                            {role === "ADMIN" && (
+                                <FaUserShield className="text-red-500 text-xs" title="Administrator" />
+                            )}
+                        </div>
+                        <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-tighter">
+                            ID: {id}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Right Section */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                {/* Right Section: Role, Status & Actions */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 shrink-0">
 
-                    <div className="text-sm text-gray-600">
-                        Role: <span className="font-medium text-gray-800">{role}</span>
+                    {/* Role Badge */}
+                    <div className="flex flex-col sm:items-end">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Access Level</span>
+                        <span className={`text-xs font-bold px-3 py-1 rounded-lg border 
+                        ${role === "ADMIN" ? "border-red-100 bg-red-50 text-red-600" : "border-slate-100 bg-slate-50 text-slate-600"}`}>
+                            {role}
+                        </span>
                     </div>
 
-                    <div className={`text-xs font-semibold px-3 py-1 rounded-full
-                        ${isBlocked
-                            ? "bg-red-100 text-red-600"
-                            : "bg-green-100 text-green-600"}`}>
-                        {isBlocked ? "Blocked" : "Active"}
-                    </div>
-
-                    {role != "ADMIN" &&
+                    {/* Status Toggle Button */}
+                    {role !== "ADMIN" ? (
                         <button
                             onClick={handleBlockUser}
-                            className={`px-4 py-2 rounded-md text-white ${isBlocked ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"} transition-colors duration-200`}>
-                            {isBlocked ? "Unblock" : "Block"}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-200 active:scale-95 
+                            ${isBlocked
+                                    ? "bg-green-50 text-green-600 border border-green-100 hover:bg-green-100"
+                                    : "bg-slate-50 text-slate-500 border border-slate-100 hover:bg-red-50 hover:text-red-600 hover:border-red-200"}`}
+                        >
+                            {isBlocked ? (
+                                <><FaCheckCircle className="text-[10px]" /> Unblock</>
+                            ) : (
+                                <><FaBan className="text-[10px]" /> Block</>
+                            )}
                         </button>
-                    }
-
+                    ) : (
+                        <div className="px-5 py-2.5 text-xs font-bold text-slate-300 uppercase tracking-widest italic cursor-not-allowed">
+                            Protected
+                        </div>
+                    )}
                 </div>
+            </div>
 
-                {toast && (
+            {/* Toast Notification Mount Point */}
+            {toast && (
+                <div className="fixed bottom-10 right-10 z-50">
                     <Toast
                         type={toast.type}
                         message={toast.message}
                         onClose={() => setToast(null)}
                     />
-                )}
-
-            </div>
+                </div>
+            )}
         </div>
-    )
+    );
 }
 
 export default UsersHandleAdmin

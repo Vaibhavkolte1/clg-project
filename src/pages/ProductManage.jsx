@@ -17,7 +17,7 @@ const ProductManage = () => {
         <div>
             <div>
                 <Navbar />
-                <h4 className="text-lg font-semibold">Your Products</h4>
+                <h4 className="pt-24 text-lg font-semibold">Your Products</h4>
                 <div>
                     {products.map(product => (
                         <ProductHandleSeller

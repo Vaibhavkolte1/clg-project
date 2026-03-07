@@ -9,6 +9,7 @@ import { FaBullhorn } from "react-icons/fa";
 import { FaBox } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../features/userSlice";
+import { FaTools, FaSignOutAlt, FaChevronRight } from "react-icons/fa";
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -22,101 +23,121 @@ const Profile = () => {
     }
 
     return (
-        <div className="main-bg min-h-screen flex flex-col text-black">
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
             <Navbar />
 
-            <div className="flex flex-col items-center px-4 py-8 gap-6">
+            <main className="flex-1 pt-24 pb-32 px-4 flex flex-col items-center gap-8 max-w-2xl mx-auto w-full">
 
-                {/* Profile Card */}
-                <div className="obj-bg w-full max-w-md rounded-xl shadow-md p-6 flex flex-col gap-4">
+                {/* 1. PROFILE HEADER CARD */}
+                <div className="w-full bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 p-8 border border-slate-100 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-3xl font-black text-white shadow-lg mb-4">
+                        {userGet?.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900">{userGet?.name}</h2>
+                    <p className="text-sm font-bold text-blue-600 uppercase tracking-widest mt-1">{userGet?.role}</p>
 
-                    <h2 className="text-2xl font-bold text-purple-600 text-center">
-                        User Profile
-                    </h2>
-
-                    <div className="space-y-2 text-sm sm:text-base">
-                        <p><span className="font-semibold">Name:</span> {userGet?.name}</p>
-                        <p><span className="font-semibold">Email:</span> {userGet?.email}</p>
-                        <p><span className="font-semibold">Address:</span> {userGet?.address}</p>
-                        <p><span className="font-semibold">Role:</span> {userGet?.role}</p>
+                    <div className="grid grid-cols-1 w-full mt-8 gap-4 pt-6 border-t border-slate-50">
+                        <ProfileInfo label="Email Address" value={userGet?.email} />
+                        <ProfileInfo label="Shipping Address" value={userGet?.address} />
                     </div>
 
-                    {/* Seller Actions */}
-                    {userGet?.role === "SELLER" && (
-                        <div className="flex flex-col gap-3 pt-2">
-                            <button
-                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
-                                onClick={() => navigate('/createproduct')}
-                            >
-                                <FaBox />
-                                Add Product
-                            </button>
-
-                            <button
-                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-purple-500 text-white hover:bg-purple-600 transition"
-                                onClick={() => navigate('/productmanage')}
-                            >
-                                <FaBox />
-                                Manage Products
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Admin Action */}
-                    {userGet?.role === "ADMIN" && (
-                        <button
-                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
-                            onClick={() => navigate('/adminpanel')}
-                        >
-                            <FaBox />
-                            Admin Panel
-                        </button>
-                    )}
-
-                    {/* Logout */}
+                    {/* LOGOUT BUTTON */}
                     <button
-                        className="mt-4 px-4 py-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition"
+                        className="mt-8 flex items-center justify-center gap-2 px-8 py-3 rounded-2xl border-2 border-slate-100 text-slate-400 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all active:scale-95 group"
                         onClick={handleLogOut}
                     >
+                        <FaSignOutAlt className="group-hover:-translate-x-1 transition-transform" />
                         Log Out
                     </button>
                 </div>
 
-                {/* More Section */}
-                <div className="obj-bg w-full max-w-md rounded-xl shadow-md p-6 flex flex-col gap-4">
-                    <h3 className="text-lg font-semibold text-center">More</h3>
+                {/* 2. ACTIONS SECTION (Role Based) */}
+                {(userGet?.role === "SELLER" || userGet?.role === "ADMIN") && (
+                    <div className="w-full space-y-3">
+                        <h3 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Management</h3>
 
-                    <div className="flex flex-col gap-3 text-sm sm:text-base">
+                        {userGet?.role === "SELLER" && (
+                            <>
+                                <ActionButton
+                                    icon={<FaBox className="text-blue-500" />}
+                                    label="Add New Product"
+                                    onClick={() => navigate('/createproduct')}
+                                />
+                                <ActionButton
+                                    icon={<FaTools className="text-indigo-500" />}
+                                    label="Manage Inventory"
+                                    onClick={() => navigate('/productmanage')}
+                                />
+                            </>
+                        )}
 
-                        <button
-                            className="flex items-center gap-3 hover:text-blue-600 transition"
-                            onClick={() => navigate('/registerseller')}
-                        >
-                            <FaStore className="text-blue-600" />
-                            Become a Seller
-                        </button>
+                        {userGet?.role === "ADMIN" && (
+                            <ActionButton
+                                icon={<FaTools className="text-red-500" />}
+                                label="Admin Control Panel"
+                                onClick={() => navigate('/adminpanel')}
+                                variant="danger"
+                            />
+                        )}
+                    </div>
+                )}
 
-                        <button className="flex items-center gap-3 hover:text-yellow-500 transition">
-                            <IoNotifications className="text-yellow-500" />
-                            Notification Settings
-                        </button>
-
-                        <button className="flex items-center gap-3 hover:text-green-600 transition">
-                            <MdSupportAgent className="text-green-600" />
-                            24x7 Customer Care
-                        </button>
-
-                        <button className="flex items-center gap-3 hover:text-purple-600 transition">
-                            <FaBullhorn className="text-purple-600" />
-                            Advertise with Us
-                        </button>
-
+                {/* 3. MORE SECTION */}
+                <div className="w-full space-y-3">
+                    <h3 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Account Settings</h3>
+                    <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+                        <MenuLink icon={<FaStore className="text-blue-500" />} label="Become a Seller" onClick={() => navigate('/registerseller')} />
+                        <MenuLink icon={<IoNotifications className="text-orange-500" />} label="Notifications" />
+                        <MenuLink icon={<MdSupportAgent className="text-green-500" />} label="24x7 Customer Care" />
+                        <MenuLink icon={<FaBullhorn className="text-purple-500" />} label="Advertise with Us" last />
                     </div>
                 </div>
 
-            </div>
+            </main>
+
         </div>
     );
+
+    // --- Sub-Components for Cleanliness ---
+
+    function ProfileInfo({ label, value }) {
+        return (
+            <div className="flex flex-col items-center sm:items-start">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{label}</span>
+                <span className="text-slate-700 font-bold text-center sm:text-left">{value || "Not provided"}</span>
+            </div>
+        );
+    }
+
+    function ActionButton({ icon, label, onClick, variant }) {
+        return (
+            <button
+                className="w-full flex items-center justify-between p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all group"
+                onClick={onClick}
+            >
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg">{icon}</div>
+                    <span className="font-bold text-slate-800">{label}</span>
+                </div>
+                <FaChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
+            </button>
+        );
+    }
+
+    function MenuLink({ icon, label, onClick, last }) {
+        return (
+            <button
+                className={`w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors ${!last && 'border-b border-slate-50'}`}
+                onClick={onClick}
+            >
+                <div className="flex items-center gap-4">
+                    <div className="text-xl">{icon}</div>
+                    <span className="font-bold text-slate-700 text-sm">{label}</span>
+                </div>
+                <FaChevronRight className="text-slate-200 text-xs" />
+            </button>
+        );
+    }
 }
 
 export default Profile

@@ -3,12 +3,13 @@ import { useParams } from 'react-router-dom'
 import api from '../api/axios';
 import Navbar from '../components/Navbar';
 import { useSelector } from "react-redux";
+import { FaUser, FaMapMarkerAlt, FaCreditCard, FaClock } from 'react-icons/fa'
 
 const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState();
-    
-     const userGet = useSelector((state) => state.user.user);
+
+    const userGet = useSelector((state) => state.user.user);
 
     useEffect(() => {
         const getOrderDetails = () => {
@@ -21,81 +22,107 @@ const OrderDetails = () => {
     }, [])
 
     return (
-        <div className="min-h-screen w-full bg-gray-100 text-gray-800 overflow-auto">
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
             <Navbar />
 
-            <div className="flex justify-center items-center py-12 px-4">
-                <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-200">
+            <main className="flex-1 pt-24 pb-32 px-4 flex justify-center items-start">
+                <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
 
-                    {/* QR Code */}
-                    <div className="flex justify-center mb-6">
-                        <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${order?._id}`}
-                            alt="Order QR"
-                            className="w-44 h-44 rounded-xl shadow-md border border-gray-200"
-                        />
-                    </div>
-
-                    {/* Order Info */}
-                    <div className="text-center space-y-2 mb-6">
-                        <h3 className="text-2xl font-bold text-gray-900">
+                    {/* Header Section */}
+                    <div className="bg-slate-900 p-8 text-center">
+                        <p className="text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Order Confirmed</p>
+                        <h2 className="text-2xl font-black text-white leading-tight">
                             {order?.name}
-                        </h3>
-                        <p className="text-xl font-semibold text-green-600">
-                            ${order?.totalAmount}
-                        </p>
-                        <p className="text-base text-yellow-600 font-medium">
-                            Quantity: {order?.quantity}
-                        </p>
+                        </h2>
                     </div>
 
-                    {/* Divider */}
-                    <div className="border-t border-gray-200 my-6"></div>
-
-                    {/* Details */}
-                    <div className="space-y-4">
-                        <h4 className="text-lg font-semibold text-gray-700">
-                            Order Details
-                        </h4>
-
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Receiver</span>
-                            <span className="font-medium text-gray-800">
-                                {userGet?.name}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Shipping Address</span>
-                            <span className="font-medium text-gray-800 text-right max-w-[60%]">
-                                {userGet?.address}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Payment</span>
-                            <span
-                                className={`font-medium ${order?.paymentStatus === "Paid"
-                                        ? "text-green-600"
-                                        : "text-red-500"
-                                    }`}
-                            >
-                                {order?.paymentStatus}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Order Status</span>
-                            <span className="font-medium text-blue-600">
-                                {order?.orderstatus}
-                            </span>
+                    {/* QR Code Section - The "Ticket" look */}
+                    <div className="px-8 -mt-6">
+                        <div className="bg-white p-4 rounded-3xl shadow-lg flex flex-col items-center border border-slate-50">
+                            <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${order?._id}`}
+                                alt="Order QR"
+                                className="w-40 h-40 rounded-xl"
+                            />
+                            <p className="text-[10px] font-mono text-slate-400 mt-3">ID: {order?._id?.toUpperCase()}</p>
                         </div>
                     </div>
 
+                    <div className="p-8">
+                        {/* Main Price Display */}
+                        <div className="text-center mb-8">
+                            <p className="text-4xl font-black text-slate-900">${order?.totalAmount}</p>
+                            <p className="text-sm font-bold text-blue-600 mt-1">Quantity: {order?.quantity}</p>
+                        </div>
+
+                        {/* Decorative Perforated Divider */}
+                        <div className="relative flex items-center mb-8">
+                            <div className="flex-1 border-t-2 border-dashed border-slate-100"></div>
+                            <div className="absolute -left-10 w-4 h-4 bg-[#F8FAFC] rounded-full border border-slate-100"></div>
+                            <div className="absolute -right-10 w-4 h-4 bg-[#F8FAFC] rounded-full border border-slate-100"></div>
+                        </div>
+
+                        {/* Details List */}
+                        <div className="space-y-6">
+                            <DetailRow
+                                icon={<FaUser className="text-blue-500" />}
+                                label="Receiver"
+                                value={userGet?.name}
+                            />
+                            <DetailRow
+                                icon={<FaMapMarkerAlt className="text-red-500" />}
+                                label="Shipping to"
+                                value={userGet?.address}
+                            />
+                            <DetailRow
+                                icon={<FaCreditCard className="text-green-500" />}
+                                label="Payment"
+                                value={order?.paymentStatus}
+                                isStatus
+                                statusType={order?.paymentStatus === "Paid" ? "success" : "danger"}
+                            />
+                            <DetailRow
+                                icon={<FaClock className="text-orange-500" />}
+                                label="Status"
+                                value={order?.orderstatus}
+                                isStatus
+                                statusType="info"
+                            />
+                        </div>
+
+                        {/* Back Action */}
+                        <button
+                            onClick={() => navigate('/getmyorders')}
+                            className="w-full mt-10 py-4 bg-slate-50 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all active:scale-95"
+                        >
+                            Back to My Orders
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </main>
+
         </div>
     );
+
+    // Small helper for the detail rows to keep code clean
+    function DetailRow({ icon, label, value, isStatus, statusType }) {
+        return (
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-xs">
+                        {icon}
+                    </div>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{label}</span>
+                </div>
+                <span className={`text-sm font-bold text-right max-w-[50%] ${isStatus && statusType === "success" ? "text-green-600" :
+                        isStatus && statusType === "info" ? "text-blue-600" :
+                            "text-slate-800"
+                    }`}>
+                    {value}
+                </span>
+            </div>
+        );
+    }
 }
 
 export default OrderDetails

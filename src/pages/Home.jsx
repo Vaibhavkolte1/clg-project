@@ -1,20 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import Product from '../components/Product';
-import api from '../api/axios';
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Product from "../components/Product";
+import api from "../api/axios";
 
 const Home = () => {
+
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get('/product/get-all');
-        console.log(res.data);
+
+        const res = await api.get("/product/get-all");
+
         setProducts(res.data);
-      } catch (e) {
-        console.log("error in product fetch: ", e);
+
+      } catch (err) {
+
+        console.log("error fetching products:", err);
+        setError("Failed to load products");
+
+      } finally {
+
+        setLoading(false);
+
       }
     };
 
@@ -22,25 +34,58 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="main-bg flex flex-col h-screen text-white relative">
-      <Navbar className="absolute top-0 left-0 right-0 z-10" />
-      <div className="flex-1">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 h-[80vh] overflow-y-auto sm:p-4">
-          {products.map((p) => (
-            <Product
-              key={p.id}
-              productId={p.id}
-              pName={p.name}
-              pPrice={p.price}
-              pImage={p.image}
-              pDescription={p.description}
-              pRatings={p.ratings}
-              pStock={p.noOfReview}
-            />
-          ))}
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
+
+      {/* Navbar */}
+      <Navbar className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100" />
+
+      {/* Main */}
+      <main className="flex-grow pt-24 pb-32 px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto w-full">
+
+        {/* Header */}
+        <div className="mb-10 text-center sm:text-left">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+            Discover <span className="text-blue-600">New Arrivals</span>
+          </h1>
+
+          <p className="mt-2 text-gray-500 max-w-xl">
+            High-quality products curated just for you. Free shipping on orders over $50.
+          </p>
         </div>
-      </div>
-      <Footer className="absolute bottom-0 w-full" />
+
+        {/* Loading */}
+        {loading && (
+          <div className="text-center text-gray-500 text-lg">
+            Loading products...
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="text-center text-red-500 text-lg">
+            {error}
+          </div>
+        )}
+
+        {/* Products */}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {products.map((p) => (
+              <Product
+                key={p.id}
+                product={p}
+              />
+            ))}
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-t border-gray-200">
+        <Footer />
+      </footer>
+
     </div>
   );
 };

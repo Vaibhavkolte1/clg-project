@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
+import { FaShoppingBag, FaStar, FaBox, FaChartLine, FaRegCommentDots } from "react-icons/fa";
 
 const ProductPage = () => {
   const { productId } = useParams();
@@ -56,41 +57,54 @@ const ProductPage = () => {
   if (!product) return <p className="text-black text-center mt-20">Loading product...</p>;
 
   return (
-    <div className="main-bg min-h-screen flex flex-col text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <Navbar />
 
-      <div className="flex flex-1 items-center justify-center px-4 py-8">
-        <div className="obj-bg text-black w-full max-w-lg rounded-xl shadow-md p-6 flex flex-col gap-5">
+      <main className="flex-1 pt-24 pb-32 px-4 flex items-center justify-center">
+        <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-xl shadow-slate-200/60 p-6 sm:p-10 flex flex-col gap-8 border border-slate-100">
 
-          {/* Product Image */}
-          <img
-            src={product.image || "/fallback-image.png"}
-            alt="Product"
-            className="w-full h-72 sm:h-80 object-cover rounded-lg"
-          />
+          {/* 1. PRODUCT IMAGE: Large and Rounded */}
+          <div className="relative group overflow-hidden rounded-[2rem] bg-slate-50">
+            <img
+              src={product.image || "/fallback-image.png"}
+              alt={product.name}
+              className="w-full h-80 sm:h-96 object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            {/* Top-Right Badge */}
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm">
+              <span className="text-xs font-black text-blue-600 tracking-widest uppercase">New Arrival</span>
+            </div>
+          </div>
 
-          {/* Name + Price */}
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {product.name}
-            </h2>
-            <p className="text-lg font-semibold text-green-600 whitespace-nowrap">
+          {/* 2. HEADER: Name + Price */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {product.name}
+              </h2>
+              <div className="flex items-center gap-2 text-blue-600">
+                <FaStar className="text-yellow-400" />
+                <span className="text-sm font-bold">{product.ratings}</span>
+                <span className="text-slate-400 text-xs">({product.noOfReview} verified reviews)</span>
+              </div>
+            </div>
+            <p className="text-3xl font-black text-slate-900">
               ${product.price}
             </p>
           </div>
 
-          {/* Quantity + Add to Cart */}
+          {/* 3. CONTROLS: Quantity + CTA */}
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center border rounded-md overflow-hidden">
+            <div className="flex items-center bg-slate-100 rounded-2xl p-1 shadow-inner">
               <button
-                className="px-3 py-2 hover:bg-gray-200 transition"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm hover:text-blue-600 transition-all font-bold active:scale-90"
                 onClick={() => quantity > 1 && setQuantity(quantity - 1)}
               >
                 −
               </button>
-              <span className="px-4">{quantity}</span>
+              <span className="px-6 font-black text-slate-800">{quantity}</span>
               <button
-                className="px-3 py-2 hover:bg-gray-200 transition"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm hover:text-blue-600 transition-all font-bold active:scale-90"
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
@@ -98,77 +112,69 @@ const ProductPage = () => {
             </div>
 
             <button
-              className="flex-1 px-4 py-2 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-700 transition"
+              className="flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-slate-900 text-white font-bold hover:bg-blue-600 shadow-lg shadow-slate-200 transition-all active:scale-95"
               onClick={handleClick}
             >
+              <FaShoppingBag />
               Add to Cart
             </button>
           </div>
 
-          {/* Description */}
-          <div>
-            <p className="font-semibold mb-1">Description</p>
-            <p className="text-sm text-gray-700">
+          {/* 4. DESCRIPTION */}
+          <div className="bg-slate-50 p-6 rounded-[1.5rem]">
+            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Product Description</h4>
+            <p className="text-slate-600 leading-relaxed text-sm">
               {product.description}
             </p>
           </div>
 
-          {/* Product Meta */}
-          <div className="grid grid-cols-2 text-sm gap-4">
-            <div>
-              <p className="font-semibold">Stock</p>
-              <p>{product.stock}</p>
-            </div>
-            <div>
-              <p className="font-semibold">sold</p>
-              <p>{product.sold}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Reviews</p>
-              <p>{product.noOfReview}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Rating</p>
-              <p>{product.ratings} / 5 ⭐</p>
-            </div>
+          {/* 5. PRODUCT STATS: Organized Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-slate-100">
+            <StatBox icon={<FaBox />} label="Stock" value={product.stock} color="text-green-600" />
+            <StatBox icon={<FaChartLine />} label="Sold" value={product.sold} color="text-orange-500" />
+            <StatBox icon={<FaRegCommentDots />} label="Reviews" value={product.noOfReview} color="text-blue-500" />
+            <StatBox icon={<FaStar />} label="Rating" value={`${product.ratings}/5`} color="text-yellow-500" />
           </div>
 
-          {/* Rating Section */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
+          {/* 6. RATING INTERACTION */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-center text-xs font-black text-slate-400 uppercase tracking-widest">Rate this product</h4>
+            <div className="flex items-center justify-center gap-4">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
-                  className={`text-xl transition ${star <= rating ? "text-yellow-500" : "text-gray-300"
-                    } hover:scale-110`}
+                  className={`text-3xl transition-all duration-300 hover:scale-125 ${star <= rating ? "text-yellow-400 drop-shadow-md" : "text-slate-200"
+                    }`}
                   onClick={() => setRating(star)}
                 >
-                  ⭐
+                  ★
                 </button>
               ))}
-              <span className="text-sm">({rating})</span>
             </div>
-
             <button
-              className="w-full px-4 py-2 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-700 transition"
+              className="w-full py-3 rounded-xl border-2 border-slate-900 text-slate-900 font-bold hover:bg-slate-900 hover:text-white transition-all active:scale-95"
               onClick={handleReview}
             >
-              Submit Rating
+              Submit Review
             </button>
           </div>
-
-          {toast && (
-            <Toast
-              type={toast.type}
-              message={toast.message}
-              onClose={() => setToast(null)}
-            />
-          )}
-
         </div>
-      </div>
+      </main>
+              
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </div>
   );
-};
+
+  // Helper component for the Stats
+  function StatBox({ icon, label, value, color }) {
+    return (
+      <div className="flex flex-col items-center text-center gap-1">
+        <div className={`${color} text-lg mb-1 opacity-80`}>{icon}</div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{label}</p>
+        <p className="text-sm font-bold text-slate-800">{value}</p>
+      </div>
+    );
+  };
+}
 
 export default ProductPage;

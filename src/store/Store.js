@@ -4,7 +4,7 @@ import userReducer from "../features/userSlice";
 const preloadedState = {
   user: {
     user: JSON.parse(localStorage.getItem("user")) || null,
-    token: null,
+    token: localStorage.getItem("token") || null,
   },
 };
 

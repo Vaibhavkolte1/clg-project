@@ -13,6 +13,7 @@ import RegisterSeller from '../pages/RegisterSeller.jsx'
 import CreateProduct from '../pages/CreateProduct.jsx'
 import AdminPanel from '../pages/AdminPanel.jsx'
 import ProductManage from '../pages/ProductManage.jsx'
+import ForgotPassword from '../pages/ForgotPassword.jsx'
 
 const AppRoutes = () => {
   return (
@@ -31,6 +32,7 @@ const AppRoutes = () => {
         <Route path="/createproduct" element={<CreateProduct />} />
         <Route path="/productmanage" element={<ProductManage />} />
         <Route path="/adminpanel" element={<AdminPanel />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   )

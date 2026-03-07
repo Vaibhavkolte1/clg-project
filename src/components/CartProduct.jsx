@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import api from '../api/axios'
 import Swal from 'sweetalert2';
+import { FaCheckCircle, FaTrashAlt } from "react-icons/fa";
 
 const CartProduct = ({ productId, qty = 1, setRefresh }) => {
     const [pDetail, setPDetail] = useState(null)
@@ -100,60 +101,70 @@ const CartProduct = ({ productId, qty = 1, setRefresh }) => {
     if (!pDetail) return null
 
     return (
-        <div className="obj-bg max-w-sm sm:max-w-md m-4 p-4 rounded-lg 
-                  flex items-center justify-between gap-4
-                  shadow-sm hover:shadow-md
-                  transition-all duration-200
-                  text-black hover:bg-purple-500 hover:text-white">
+        <div className="group relative flex items-center gap-4 bg-white p-4 rounded-2xl 
+                  border border-slate-100 shadow-sm transition-all duration-300 
+                  hover:shadow-md hover:border-blue-100 w-full overflow-hidden">
 
-            {/* Left: Image + Name */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Left: Product Image */}
+            <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-slate-50">
                 <img
                     src={pDetail.image || "/placeholder.png"}
-                    alt="Product"
-                    className="h-12 w-12 object-cover rounded-md"
+                    alt={pDetail.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="font-semibold truncate">
-                    {pDetail.name}
-                </span>
             </div>
 
-            {/* Middle: Qty + Price */}
-            <div className="flex flex-col text-sm">
-                <span className="opacity-80">Qty: {qty}</span>
-                <span className="font-medium">
-                    Rs. {pDetail.price ? pDetail.price * qty : 0}
-                </span>
+            {/* Middle: Details & Info */}
+            <div className="flex flex-1 flex-col min-w-0">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className="font-bold text-slate-800 text-sm sm:text-base truncate pr-2">
+                            {pDetail.name}
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-tight">
+                            Qty: <span className="text-slate-900">{qty}</span>
+                        </p>
+                    </div>
+
+                    {/* Right Inside: Price */}
+                    <div className="text-right">
+                        <p className="text-lg font-black text-blue-600">
+                            ${(pDetail.price * qty).toFixed(2)}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-medium">
+                            ${pDetail.price}/ea
+                        </p>
+                    </div>
+                </div>
+
+                {/* Bottom: Inline Actions */}
+                <div className="mt-3 flex items-center gap-4">
+                    {/* Order Button styled as a text-link with icon */}
+                    <button
+                        className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-widest disabled:opacity-50"
+                        onClick={handleOrder}
+                        disabled={processing}
+                    >
+                        <FaCheckCircle className="text-sm" />
+                        {processing ? 'Processing...' : 'Buy Now'}
+                    </button>
+
+                    <div className="h-3 w-[1px] bg-slate-200" /> {/* Divider */}
+
+                    {/* Remove Button as a subtle icon link */}
+                    <button
+                        className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest disabled:opacity-50"
+                        onClick={handleRemoveFromCart}
+                        disabled={processing}
+                    >
+                        <FaTrashAlt className="text-xs" />
+                        Remove
+                    </button>
+                </div>
             </div>
 
-            {/* Right: Actions */}
-            <div className="flex flex-col gap-2">
-                <button
-                    className="px-4 py-2 rounded-md text-sm font-medium 
-                   bg-blue-500 text-white 
-                   hover:bg-blue-600 
-                   disabled:opacity-50 
-                   transition-colors"
-                    onClick={handleOrder}
-                    disabled={processing}
-                >
-                    Order
-                </button>
-
-                <button
-                    className="px-4 py-2 rounded-md text-sm font-medium 
-                    text-white
-                   bg-red-500
-                   hover:bg-red-600
-                   disabled:opacity-50 
-                   transition-colors"
-                    onClick={handleRemoveFromCart}
-                    disabled={processing}
-                >
-                    Remove
-                </button>
-            </div>
-
+            {/* Subtle Accent Bar on Hover */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 translate-x-[-100%] group-hover:translate-x-0 transition-transform" />
         </div>
     );
 }

@@ -15,7 +15,6 @@ const userSlice = createSlice({
 
       // Save to localStorage
       localStorage.setItem("user", JSON.stringify(action.payload.user));
-      localStorage.setItem("token", action.payload.token);
     },
     clearUser: (state) => {
       state.user = null;

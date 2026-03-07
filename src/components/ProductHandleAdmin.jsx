@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import api from '../api/axios';
+import { FaBoxOpen, FaChartLine, FaTag, FaTrashAlt } from "react-icons/fa";
 
 const ProductHandleAdmin = ({ id, name, image, price, stock, sold, setRefresh }) => {
     const handleDeletProduct = () => {
@@ -20,82 +21,89 @@ const ProductHandleAdmin = ({ id, name, image, price, stock, sold, setRefresh })
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto
-                    bg-white
-                    border border-gray-200
-                    rounded-xl
-                    p-5
-                    shadow-sm hover:shadow-md
-                    transition-all duration-200">
+        <div className="group relative w-full max-w-4xl mx-auto bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-300">
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
 
-                {/* Left Section */}
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <img
-                        src={image}
-                        alt="product"
-                        className="h-14 w-14 object-cover rounded-lg border border-gray-100"
-                    />
-
+                {/* 1. PRODUCT PREVIEW & IDENTITY */}
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
+                        <img
+                            src={image || "/placeholder.png"}
+                            alt={name}
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                    </div>
                     <div className="min-w-0">
-                        <h2 className="text-base font-semibold text-gray-800 truncate">
+                        <h2 className="text-sm sm:text-base font-black text-slate-800 truncate leading-tight">
                             {name}
                         </h2>
-                        <p className="text-xs text-gray-400 mt-1">
-                            ID: {id}
+                        <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-tighter">
+                            REF: {id}
                         </p>
                     </div>
                 </div>
 
-                {/* Right Section */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6 w-full sm:w-auto">
+                {/* 2. DATA GRID */}
+                <div className="grid grid-cols-3 gap-4 sm:gap-8 shrink-0">
 
-                    <div className="flex justify-between sm:flex-col sm:text-right">
-                        <span className="text-xs text-gray-400 uppercase tracking-wide">
-                            Stock
-                        </span>
-                        <span className="text-sm font-medium text-gray-700">
-                            {stock}
+                    {/* Stock Status */}
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <FaBoxOpen className="text-[10px] text-slate-400" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Stock</span>
+                        </div>
+                        <span className={`text-sm font-bold ${stock < 10 ? 'text-red-500' : 'text-slate-700'}`}>
+                            {stock} <span className="text-[10px] font-medium opacity-50">units</span>
                         </span>
                     </div>
 
-                    <div className="flex justify-between sm:flex-col sm:text-right">
-                        <span className="text-xs text-gray-400 uppercase tracking-wide">
-                            Sold
-                        </span>
-                        <span className="text-sm font-medium text-gray-700">
-                            {sold}
-                        </span>
-                    </div>
-
-                    <div className="flex justify-between sm:flex-col sm:text-right">
-                        <span className="text-xs text-gray-400 uppercase tracking-wide">
-                            Price
-                        </span>
-                        <span className="text-base font-semibold text-gray-900">
-                            Rs. {price}
+                    {/* Sales Performance */}
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <FaChartLine className="text-[10px] text-slate-400" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sold</span>
+                        </div>
+                        <span className="text-sm font-bold text-slate-700">
+                            {sold} <span className="text-[10px] font-medium opacity-50">vols</span>
                         </span>
                     </div>
 
-                    <button
-                        onClick={handleDeletProduct}
-                        className="w-full sm:w-auto
-                               px-4 py-2
-                               rounded-lg
-                               text-sm font-medium
-                               border border-red-300
-                               text-red-600
-                               hover:bg-red-50
-                               transition-all duration-150">
-                        Delete
-                    </button>
+                    {/* Pricing */}
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <FaTag className="text-[10px] text-slate-400" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</span>
+                        </div>
+                        <span className="text-sm font-black text-blue-600">
+                            ${price.toLocaleString()}
+                        </span>
+                    </div>
 
                 </div>
 
+                {/* 3. ADMIN ACTIONS */}
+                <div className="flex items-center justify-end border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
+                    <button
+                        onClick={handleDeletProduct}
+                        className="group/btn flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest
+                     text-slate-400 bg-slate-50 border border-slate-100
+                     hover:bg-red-50 hover:text-red-600 hover:border-red-200 
+                     transition-all duration-200 active:scale-95 w-full lg:w-auto"
+                    >
+                        <FaTrashAlt className="text-[10px] group-hover/btn:rotate-12 transition-transform" />
+                        Delete
+                    </button>
+                </div>
+
             </div>
+
+            {/* Subtle Low-Stock Warning Bar */}
+            {stock < 10 && (
+                <div className="absolute top-0 left-0 w-1 h-full bg-red-500 rounded-l-2xl" title="Low Stock Warning" />
+            )}
         </div>
-    )
+    );
 }
 
 export default ProductHandleAdmin
