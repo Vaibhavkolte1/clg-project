@@ -8,6 +8,7 @@ import { FaUser, FaMapMarkerAlt, FaCreditCard, FaClock } from 'react-icons/fa'
 const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState();
+    const [paymentMethod, setPaymentMethod] = useState();
 
     const userGet = useSelector((state) => state.user.user);
 
@@ -20,6 +21,21 @@ const OrderDetails = () => {
 
         getOrderDetails();
     }, [])
+
+    const handlePayment = () => {
+        if (!paymentMethod) {
+            console.warn("No payment method selected");
+            return;
+        }
+
+        api.post("/order/payment", { orderId: order?.id, paymentMethod: paymentMethod })
+            .then(res => {
+                console.log("Payment processed:", res.data);
+            })
+            .catch(e => {
+                console.error("Error processing payment:", e);
+            });
+    }
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
@@ -40,11 +56,11 @@ const OrderDetails = () => {
                     <div className="px-8 -mt-6">
                         <div className="bg-white p-4 rounded-3xl shadow-lg flex flex-col items-center border border-slate-50">
                             <img
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${order?._id}`}
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${order?.id}`}
                                 alt="Order QR"
                                 className="w-40 h-40 rounded-xl"
                             />
-                            <p className="text-[10px] font-mono text-slate-400 mt-3">ID: {order?._id?.toUpperCase()}</p>
+                            <p className="text-[10px] font-mono text-slate-400 mt-3">ID: {order?.id}</p>
                         </div>
                     </div>
 
@@ -64,39 +80,103 @@ const OrderDetails = () => {
 
                         {/* Details List */}
                         <div className="space-y-6">
-                            <DetailRow
-                                icon={<FaUser className="text-blue-500" />}
-                                label="Receiver"
-                                value={userGet?.name}
-                            />
-                            <DetailRow
-                                icon={<FaMapMarkerAlt className="text-red-500" />}
-                                label="Shipping to"
-                                value={userGet?.address}
-                            />
-                            <DetailRow
-                                icon={<FaCreditCard className="text-green-500" />}
-                                label="Payment"
-                                value={order?.paymentStatus}
-                                isStatus
-                                statusType={order?.paymentStatus === "Paid" ? "success" : "danger"}
-                            />
-                            <DetailRow
-                                icon={<FaClock className="text-orange-500" />}
-                                label="Status"
-                                value={order?.orderstatus}
-                                isStatus
-                                statusType="info"
-                            />
-                        </div>
+                            {/* Details List */}
+                            <div className="space-y-6">
+                                <DetailRow
+                                    icon={<FaUser className="text-blue-500" />}
+                                    label="Receiver"
+                                    value={userGet?.name}
+                                />
+                                <DetailRow
+                                    icon={<FaMapMarkerAlt className="text-red-500" />}
+                                    label="Shipping to"
+                                    value={userGet?.address}
+                                />
+                                <DetailRow
+                                    icon={<FaCreditCard className="text-green-500" />}
+                                    label="Payment"
+                                    value={order?.paymentStatus}
+                                    isStatus
+                                    statusType={order?.paymentStatus === "Paid" ? "success" : "danger"}
+                                />
+                                <DetailRow
+                                    icon={<FaClock className="text-orange-500" />}
+                                    label="Status"
+                                    value={order?.orderstatus}
+                                    isStatus
+                                    statusType="info"
+                                />
+                            </div>
 
-                        {/* Back Action */}
-                        <button
-                            onClick={() => navigate('/getmyorders')}
-                            className="w-full mt-10 py-4 bg-slate-50 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all active:scale-95"
-                        >
-                            Back to My Orders
-                        </button>
+                            {/* Payment & Back Actions */}
+                            <div className="mt-10 space-y-3">
+                                {order?.paymentStatus !== "DONE" && (
+                                    <div className="mt-8 space-y-4">
+                                        {/* Payment Method Selector */}
+                                        <div className="relative group">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 ml-1 block">
+                                                Payment Method
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    name="paymentMethod"
+                                                    id="paymentMethod"
+                                                    value={paymentMethod}
+                                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                                    className="w-full bg-slate-50 border border-slate-100 text-slate-700 text-sm rounded-2xl p-4 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer font-bold"
+                                                >
+                                                    <option value="creditCard">💳 Credit Card</option>
+                                                    <option value="paypal">🅿️ PayPal</option>
+                                                    <option value="stripe">🏁 Stripe</option>
+                                                </select>
+                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card Input Section */}
+                                        <div className="relative group">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 ml-1 block">
+                                                Card Details
+                                            </label>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                                    <FaCreditCard className="w-4 h-4" />
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    placeholder='0000 0000 0000 0000'
+                                                    className="w-full bg-slate-50 border border-slate-100 text-slate-900 text-sm rounded-2xl p-4 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-300 font-mono tracking-wider"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Pay Button */}
+                                        <button
+                                            onClick={() => {
+                                                console.log("Proceeding to payment for order:", order?.id);
+                                                handlePayment();
+                                            }}
+                                            className="w-full mt-4 py-4 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group"
+                                        >
+                                            <span>Pay Now</span>
+                                            <span className="h-4 w-[1px] bg-blue-400/50"></span>
+                                            <span>${order?.totalAmount}</span>
+                                        </button>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={() => navigate(-1)}
+                                    className="w-full py-4 bg-slate-50 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all active:scale-95"
+                                >
+                                    Back to My Orders
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -115,8 +195,8 @@ const OrderDetails = () => {
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{label}</span>
                 </div>
                 <span className={`text-sm font-bold text-right max-w-[50%] ${isStatus && statusType === "success" ? "text-green-600" :
-                        isStatus && statusType === "info" ? "text-blue-600" :
-                            "text-slate-800"
+                    isStatus && statusType === "info" ? "text-blue-600" :
+                        "text-slate-800"
                     }`}>
                     {value}
                 </span>
